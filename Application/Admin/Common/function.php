@@ -69,6 +69,10 @@ if (!function_exists('array_sort')) {
 if (!function_exists('auth_list')) {
     function auth_list()
     {
+        $list = S(session('user.user_name').'_auth_list');//取缓存
+        if(!empty($list)){
+            return $list;
+        }
         // $user = session('user');
         // $user = D('User')->relation(true)->where(['id' => $user['id']])->find();
         // if ($user['is_super'] != 1) {
@@ -103,6 +107,28 @@ if (!function_exists('auth_list')) {
             }
             $list = array_unique($authArr, SORT_REGULAR);
         // }
+        S(session('user.user_name').'_auth_list',$list);//存缓存
         return $list;
+    }
+}
+
+if (!function_exists('create_menu')) {
+    function create_menu()
+    {
+        $tree = list_to_tree(auth_list());
+        $menuHtml = '<ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu" lay-filter="layadmin-system-side-menu">';
+        foreach ($tree as $k => $v) {
+            $menuHtml .= '<li data-name="'.$v['auth_name'].'" class="layui-nav-item '.($k==0?'layui-nav-itemed':'').'"><a href="javascript:;" lay-tips="'.$v['auth_name'].'" lay-direction="2"><i class="layui-icon '.$v['icon'].'"></i><cite>'.$v['auth_name'].'</cite></a>';
+            if(count($v['children'])>0){
+                $menuHtml .='<dl class="layui-nav-child">';
+                foreach ($v['children'] as $kk => $vv) {
+                    $menuHtml .= '<dd data-name="'.$vv['auth_name'].'" class="'.($k==0&&$kk==0?'layui-this':'').'"><a lay-href="'.U($vv['url']).'">'.$vv['auth_name'].'</a></dd>';
+                }
+                $menuHtml .= '</dl>';
+            }
+            $menuHtml .= '</li>';
+        }
+        $menuHtml .= '</ul>';
+        return $menuHtml;
     }
 }

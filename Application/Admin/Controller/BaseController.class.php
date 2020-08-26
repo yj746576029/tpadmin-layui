@@ -15,8 +15,9 @@ class BaseController extends Controller
 
     public function _initialize()
     {
-        print_r(list_to_tree(auth_list()));die;
+        
         // $this->checkLogin();
+        $this->assign('sidebar', create_menu());
         // $this->checkAuth();
     }
 

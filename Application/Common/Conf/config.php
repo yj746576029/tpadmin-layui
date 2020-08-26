@@ -8,5 +8,4 @@ return array(
 	'DB_PWD'                =>  'root',          // 密码
 	'DB_PORT'               =>  '3306',        // 端口
 	'DB_PREFIX'             =>  'tp_',    // 数据库表前缀
-	'URL_MODEL'             =>  0,//建议不要用pathinfo有一些get请求中文参数会存在转码问题
 );
