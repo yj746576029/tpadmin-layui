@@ -8,24 +8,34 @@ class UserController extends BaseController
 {
     public function index()
     {
-        $condition['is_super'] = 0;
-        if (!empty(I('get.start_time'))) {
-            $s = strtotime(I('get.start_time'));
-            $condition['create_time'] = array('egt', $s);
-            $this->assign('start_time', I('get.start_time'));
+        if(I('get.render')){
+            $condition['is_super'] = 0;
+            $page = empty(I('get.page')) ? 1 : I('get.page');
+            $pageSize = empty(I('get.limit')) ? 15 : I('get.limit');
+            if (!empty(I('get.user_name'))) {
+                $condition['user_name'] = I('get.user_name');
+            }
+            if (!empty(I('get.mobile'))) {
+                $condition['mobile'] = I('get.mobile');
+            }
+            if (!empty(I('get.email'))) {
+                $condition['email'] = I('get.email');
+            }
+            $list = D('User')->relation(true)->where($condition)->order('id desc')->page($page . ',' . $pageSize)->select();
+            foreach($list as $k=>$v){
+                $list[$k]['create_time']=date('Y-m-d H:i:s',$v['create_time']);
+                $roleArr=[];
+                foreach($v['role'] as $vv){
+                    array_push($roleArr,$vv['role_name']);
+                }
+                $list[$k]['role']=implode('|',$roleArr);
+            }
+            $data['code']=0;
+            $data['msg']='';
+            $data['count']=0;
+            $data['data']=$list;
+            $this->ajaxReturn($data);
         }
-        if (!empty(I('get.end_time'))) {
-            $e = strtotime(I('get.end_time'));
-            $condition['end_time'] = array('elt', $e);
-            $this->assign('end_time', I('get.end_time'));
-        }
-        if (!empty(I('get.keywords'))) {
-            $condition['user_name'] = array('like', '%' . I('get.keywords') . '%');
-            $this->assign('keywords', I('get.keywords'));
-        }
-        $list = D('User')->relation(true)->where($condition)->select();
-        $this->assign('empty', '<tr class="text-c"><td colspan="9">数据为空</td></tr>');
-        $this->assign('list', $list);
         $this->display();
     }
 
@@ -56,14 +66,20 @@ class UserController extends BaseController
                 $res = D('UserRole')->addAll($dataList);
                 if ($res) {
                     M()->commit();
-                    $this->success('新增成功', U('admin/user/index'));
+                    $data['code']=0;
+                    $data['msg']='添加成功';
+                    $this->ajaxReturn($data);
                 } else {
                     M()->rollback();
-                    $this->error('新增失败');
+                    $data['code']=1;
+                    $data['msg']='添加失败';
+                    $this->ajaxReturn($data);
                 }
             } else {
                 M()->rollback();
-                $this->error('新增失败');
+                $data['code']=1;
+                $data['msg']='添加失败';
+                $this->ajaxReturn($data);
             }
         } else {
             $roleList = M('Role')->field('id,role_name')->where(['status' => 1])->select();

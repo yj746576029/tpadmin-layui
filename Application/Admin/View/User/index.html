@@ -20,33 +20,19 @@
           <div class="layui-inline">
             <label class="layui-form-label">登录名</label>
             <div class="layui-input-block">
-              <input type="text" name="loginname" placeholder="请输入" autocomplete="off" class="layui-input">
+              <input type="text" name="user_name" placeholder="请输入" autocomplete="off" class="layui-input">
             </div>
           </div>
           <div class="layui-inline">
             <label class="layui-form-label">手机</label>
             <div class="layui-input-block">
-              <input type="text" name="telphone" placeholder="请输入" autocomplete="off" class="layui-input">
+              <input type="text" name="mobile" placeholder="请输入" autocomplete="off" class="layui-input">
             </div>
           </div>
           <div class="layui-inline">
             <label class="layui-form-label">邮箱</label>
             <div class="layui-input-block">
               <input type="text" name="email" placeholder="请输入" autocomplete="off" class="layui-input">
-            </div>
-          </div>
-          <div class="layui-inline">
-            <label class="layui-form-label">角色</label>
-            <div class="layui-input-block">
-              <select name="role">
-                <option value="0">管理员</option>
-                <option value="1">超级管理员</option>
-                <option value="2">纠错员</option>
-                <option value="3">采购员</option>
-                <option value="4">推销员</option>
-                <option value="5">运营人员</option>
-                <option value="6">编辑</option>
-              </select>
             </div>
           </div>
           <div class="layui-inline">
@@ -64,13 +50,6 @@
         </div>
         
         <table id="LAY-user-back-manage" lay-filter="LAY-user-back-manage"></table>  
-        <script type="text/html" id="buttonTpl">
-          {{#  if(d.check == true){ }}
-            <button class="layui-btn layui-btn-xs">已审核</button>
-          {{#  } else { }}
-            <button class="layui-btn layui-btn-primary layui-btn-xs">未审核</button>
-          {{#  } }}
-        </script>
         <script type="text/html" id="table-useradmin-admin">
           <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
           {{#  if(d.role == '超级管理员'){ }}
@@ -89,10 +68,28 @@
     base: '__PUBLIC__/layuiadmin/' //静态资源所在路径
   }).extend({
     index: 'lib/index' //主入口模块
-  }).use(['index', 'useradmin', 'table'], function(){
+  }).use(['index', 'table'], function(){
     var $ = layui.$
     ,form = layui.form
     ,table = layui.table;
+
+    //管理员管理
+    table.render({
+      elem: '#LAY-user-back-manage'
+      ,page: true //开启分页
+      ,url: "{:U('Admin/User/index',array('render'=>'1'))}" //模拟接口
+      ,cols: [[
+        {type: 'checkbox', fixed: 'left'}
+        ,{field: 'id', width: 80, title: 'ID', sort: true}
+        ,{field: 'user_name', title: '登录名'}
+        ,{field: 'mobile', title: '手机'}
+        ,{field: 'email', title: '邮箱'}
+        ,{field: 'role', title: '角色'}
+        ,{field: 'create_time', title: '加入时间', sort: true}
+        ,{title: '操作', width: 150, align: 'center', fixed: 'right', toolbar: '#table-useradmin-admin'}
+      ]]
+      ,text: '对不起，加载出现异常！'
+    });
     
     //监听搜索
     form.on('submit(LAY-user-back-search)', function(data){
@@ -138,22 +135,32 @@
         layer.open({
           type: 2
           ,title: '添加管理员'
-          ,content: 'adminform.html'
+          ,content: "{:U('Admin/User/add')}"
           ,area: ['420px', '420px']
           ,btn: ['确定', '取消']
           ,yes: function(index, layero){
             var iframeWindow = window['layui-layer-iframe'+ index]
-            ,submitID = 'LAY-user-back-submit'
-            ,submit = layero.find('iframe').contents().find('#'+ submitID);
+            ,submit = layero.find('iframe').contents().find('#LAY-user-back-submit');
 
             //监听提交
-            iframeWindow.layui.form.on('submit('+ submitID +')', function(data){
+            iframeWindow.layui.form.on('submit(LAY-user-front-submit)', function(data){
               var field = data.field; //获取提交的字段
-              
               //提交 Ajax 成功后，静态更新表格中的数据
-              //$.ajax({});
-              table.reload('LAY-user-front-submit'); //数据刷新
-              layer.close(index); //关闭弹层
+              $.ajax({
+                url:"{:U('Admin/User/add')}",
+                type:'post',
+                data:field,
+                success:function(re){
+                  if(re.code==0){
+                    layer.msg(re.msg, {icon: 6});
+                    table.reload('LAY-user-back-manage'); //数据刷新
+                    layer.close(index); //关闭弹层
+                  }else{
+                    layer.msg(re.msg, {icon: 5}); 
+                  }
+                }
+              });
+              
             });  
             
             submit.trigger('click');
