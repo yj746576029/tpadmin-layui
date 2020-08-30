@@ -92,7 +92,6 @@ class UserController extends BaseController
     public function edit()
     {
         if (IS_POST) {
-            M()->startTrans();
             $id = I('post.id');
             $data['user_name'] = I('post.user_name');
             if (!empty(I('post.password'))) {
@@ -103,6 +102,7 @@ class UserController extends BaseController
             $data['email'] = I('post.email');
             $data['update_time'] = time();
             $data['is_super'] = 0;
+            M()->startTrans();
             $re = M('User')->where(['id' => $id])->save($data);
             if ($re) {
                 D('UserRole')->where(['user_id' => $id])->delete();
@@ -178,7 +178,7 @@ class UserController extends BaseController
         } else {
             M()->rollback();
             $data['code']=1;
-            $data['msg']='删除成功';
+            $data['msg']='删除失败';
             $this->ajaxReturn($data);
         }
     }
