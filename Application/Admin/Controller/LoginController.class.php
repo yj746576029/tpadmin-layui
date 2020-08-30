@@ -47,7 +47,9 @@ class LoginController extends Controller
     public function logout()
     {
         session('user', null);
-        $this->success('退出成功', U('admin/login/index'));
+        $data['code']=0;
+        $data['msg']='退出成功';
+        $this->ajaxReturn($data);
     }
 
     public function verify()
