@@ -76,40 +76,40 @@ if (!function_exists('auth_list')) {
             }
         }
 
-        // $user = session('user');
-        // $user = D('User')->relation(true)->where(['id' => $user['id']])->find();
-        // if ($user['is_super'] != 1) {
-        //     $roleIds = [];
-        //     foreach ($user['role'] as $v) {
-        //         if ($v['status'] == 1) {
-        //             array_push($roleIds, $v['id']);
-        //         }
-        //     }
-        //     $roleIdsStr = implode(',', $roleIds);
-        //     $roleArr = D('Role')->relation(true)->where(['id' => ['in', $roleIdsStr]])->select();
-        //     $authArr = [];
-        //     foreach ($roleArr as $v) {
-        //         foreach ($v['auth'] as $vv) {
-        //             $d = $vv;
-        //             unset($d['create_time'], $d['update_time']);
-        //             if ($vv['status'] == 1) {
-        //                 array_push($authArr, $d);
-        //             }
-        //         }
-        //     }
-        //     $list = array_unique($authArr, SORT_REGULAR);
-        // } else {
-        $authList = M('Auth')->select();
-        $authArr = [];
-        foreach ($authList as $vv) {
-            $d = $vv;
-            unset($d['create_time'], $d['update_time']);
-            if ($vv['status'] == 1) {
-                array_push($authArr, $d);
+        $user = session('user');
+        $user = D('User')->relation(true)->where(['id' => $user['id']])->find();
+        if ($user['is_super'] != 1) {
+            $roleIds = [];
+            foreach ($user['role'] as $v) {
+                if ($v['status'] == 1) {
+                    array_push($roleIds, $v['id']);
+                }
             }
+            $roleIdsStr = implode(',', $roleIds);
+            $roleArr = D('Role')->relation(true)->where(['id' => ['in', $roleIdsStr]])->select();
+            $authArr = [];
+            foreach ($roleArr as $v) {
+                foreach ($v['auth'] as $vv) {
+                    $d = $vv;
+                    unset($d['create_time'], $d['update_time']);
+                    if ($vv['status'] == 1) {
+                        array_push($authArr, $d);
+                    }
+                }
+            }
+            $list = array_unique($authArr, SORT_REGULAR);
+        } else {
+            $authList = M('Auth')->select();
+            $authArr = [];
+            foreach ($authList as $vv) {
+                $d = $vv;
+                unset($d['create_time'], $d['update_time']);
+                if ($vv['status'] == 1) {
+                    array_push($authArr, $d);
+                }
+            }
+            $list = array_unique($authArr, SORT_REGULAR);
         }
-        $list = array_unique($authArr, SORT_REGULAR);
-        // }
 
         if (!APP_DEBUG) {
             S(session('user.user_name') . '_auth_list', $list); //存缓存

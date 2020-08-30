@@ -29,17 +29,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">权限范围</label>
             <div class="layui-input-block">
-                <foreach name="list" item="v">
-                    <div>
-                        <div class="layui-bg-gray" style="line-height:20px;text-align: center;color:#666;padding:9px 15px;margin-top: 9px;">{$v['auth_name']}</div>
-                        <foreach name="v.children" item="vv">
-                            <div style="line-height:20px;text-align: left;color:#666;margin-top: 9px;">{$vv['auth_name']}</div>
-                            <foreach name="vv.children" item="vvv">
-                                <input type="checkbox" name="auth_ids[]" value="{$vvv['id']}" lay-skin="primary" title="{$vvv['auth_name']}" {:in_array($vvv['id'],$item['auth_ids'])?'checked':''}>
-                            </foreach>
-                        </foreach>
-                    </div>
-                </foreach>
+                <div id="auth"></div>
             </div>
         </div>
         <div class="layui-form-item layui-hide">
@@ -50,13 +40,26 @@
 
     <script src="__PUBLIC__/layuiadmin/layui/layui.js"></script>
     <script>
+        var dataStr='{$list}'
+        var auth_ids = '{$auth_ids}'
         layui.config({
             base: '__PUBLIC__/layuiadmin/' //静态资源所在路径
         }).extend({
             index: 'lib/index' //主入口模块
-        }).use(['index', 'form'], function () {
+        }).use(['index', 'form' , 'tree'], function () {
             var $ = layui.$
-                , form = layui.form;
+                , form = layui.form
+                , tree = layui.tree;
+
+                //渲染
+            var inst = tree.render({
+                elem: '#auth'  //绑定元素
+                ,showCheckbox: true  //是否显示复选框
+                , data: JSON.parse(dataStr)
+                , id: 'authId' //定义索引
+            });
+
+            tree.setChecked('authId', JSON.parse(auth_ids));
         })
     </script>
 </body>

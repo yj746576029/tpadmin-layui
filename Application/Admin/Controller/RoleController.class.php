@@ -54,9 +54,12 @@ class RoleController extends BaseController
                 $this->ajaxReturn(['code'=>1,'msg'=>'添加失败']);
             }
         } else {
-            $authList = M('Auth')->field('id,auth_name,parent_id')->select();
+            $authList = M('Auth')->field('id,auth_name as title,parent_id')->select();
+            foreach($authList as $k=>$v){
+                $authList[$k]['field']='auth_ids[]';
+            }
             $list = list_to_tree($authList);
-            $this->assign('list', $list);
+            $this->assign('list', json_encode($list));
             $this->display();
         }
     }
@@ -110,9 +113,13 @@ class RoleController extends BaseController
                 array_push($auth_ids,$v['id']);
             }
             $role['auth_ids']=$auth_ids;
-            $authList = M('Auth')->field('id,auth_name,parent_id')->select();
+            $authList = M('Auth')->field('id,auth_name as title,parent_id')->select();
+            foreach($authList as $k=>$v){
+                $authList[$k]['field']='auth_ids[]';
+            }
             $list = list_to_tree($authList);
-            $this->assign('list', $list);
+            $this->assign('list', json_encode($list));
+            $this->assign('auth_ids', json_encode($role['auth_ids']));
             $this->assign('item', $role);
             $this->display();
         }
