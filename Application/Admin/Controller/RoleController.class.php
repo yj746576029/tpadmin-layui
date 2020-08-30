@@ -44,20 +44,14 @@ class RoleController extends BaseController
                 $res = D('RoleAuth')->addAll($dataList);
                 if($res){
                     M()->commit();
-                    $data['code']=0;
-                    $data['msg']='添加成功';
-                    $this->ajaxReturn($data);
+                    $this->ajaxReturn(['code'=>0,'msg'=>'添加成功']);
                 }else{
                     M()->rollback();
-                    $data['code']=1;
-                    $data['msg']='添加失败';
-                    $this->ajaxReturn($data);
+                    $this->ajaxReturn(['code'=>1,'msg'=>'添加失败']);
                 }
             } else {
                 M()->rollback();
-                $data['code']=1;
-                    $data['msg']='添加失败';
-                    $this->ajaxReturn($data);
+                $this->ajaxReturn(['code'=>1,'msg'=>'添加失败']);
             }
         } else {
             $authList = M('Auth')->field('id,auth_name,parent_id')->select();
@@ -77,14 +71,10 @@ class RoleController extends BaseController
                 $re = M('Role')->where(['id' => $id])->save($data);
                 if($re){
                     M()->commit();
-                    $data['code']=0;
-                    $data['msg']=$data['status']==1?'开启成功':'关闭成功';
-                    $this->ajaxReturn($data);
+                    $this->ajaxReturn(['code'=>0,'msg'=>$data['status']==1?'开启成功':'关闭成功']);
                 }else{
                     M()->rollback();
-                    $data['code']=1;
-                    $data['msg']=$data['status']==1?'开启失败':'关闭失败';
-                    $this->ajaxReturn($data);
+                    $this->ajaxReturn(['code'=>1,'msg'=>$data['status']==1?'开启失败':'关闭失败']);
                 }
             }
             $data['role_name'] = I('post.role_name');
@@ -103,20 +93,14 @@ class RoleController extends BaseController
                 $res = D('RoleAuth')->addAll($dataList);
                 if($res){
                     M()->commit();
-                    $data['code']=0;
-                    $data['msg']='编辑成功';
-                    $this->ajaxReturn($data);
+                    $this->ajaxReturn(['code'=>0,'msg'=>'编辑成功']);
                 }else{
                     M()->rollback();
-                    $data['code']=1;
-                    $data['msg']='编辑失败';
-                    $this->ajaxReturn($data);
+                    $this->ajaxReturn(['code'=>1,'msg'=>'编辑失败']);
                 }
             } else {
                 M()->rollback();
-                $data['code']=1;
-                $data['msg']='编辑失败';
-                $this->ajaxReturn($data);
+                $this->ajaxReturn(['code'=>1,'msg'=>'编辑失败']);
             }
         } else {
             $id = I('get.id');
@@ -142,14 +126,10 @@ class RoleController extends BaseController
         if ($res) {
             D('RoleAuth')->where(['role_id'=>$id])->delete();
             M()->commit();
-            $data['code']=0;
-            $data['msg']='删除成功';
-            $this->ajaxReturn($data);
+            $this->ajaxReturn(['code'=>0,'msg'=>'删除成功']);
         } else {
             M()->rollback();
-            $data['code']=1;
-            $data['msg']='删除失败';
-            $this->ajaxReturn($data);
+            $this->ajaxReturn(['code'=>1,'msg'=>'删除失败']);
         }
         
     }

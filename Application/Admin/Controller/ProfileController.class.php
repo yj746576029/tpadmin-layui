@@ -24,13 +24,9 @@ class ProfileController extends BaseController
             $data['email'] = I('post.email');
             $re = M('User')->where(['id' => $id])->save($data);
             if ($re) {
-                $data['code']=0;
-                $data['msg']='修改成功';
-                $this->ajaxReturn($data);
+                $this->ajaxReturn(['code'=>0,'msg'=>'修改成功']);
             } else {
-                $data['code']=1;
-                $data['msg']='修改失败';
-                $this->ajaxReturn($data);
+                $this->ajaxReturn(['code'=>1,'msg'=>'修改失败']);
             }
         }
     }
@@ -57,22 +53,16 @@ class ProfileController extends BaseController
             $user = M('User')->where(['id' => $id])->find();
             if ($user['password'] === md5(md5($password) . $user['salt'])) {
                 $data['password'] = md5(md5($passwordNew) . $user['salt']);
+                $data['update_time'] = time();
                 $re = M('User')->where(['id' => $id])->save($data);
                 if ($re) {
                     session('user', null);
-                    $data['code']=0;
-                    $data['msg']='修改成功，请重新登录';
-                    $this->ajaxReturn($data);
+                    $this->ajaxReturn(['code'=>0,'msg'=>'修改成功，请重新登录']);
                 } else {
-                    $data['code']=1;
-                    $data['msg']='修改失败';
-                    $this->ajaxReturn($data);
+                    $this->ajaxReturn(['code'=>1,'msg'=>'修改失败']);
                 }
             } else {
-                $data['code']=1;
-                $data['msg']='原始密码错误';
-                $this->ajaxReturn($data);
-                $this->error('原始密码错误');
+                $this->ajaxReturn(['code'=>1,'msg'=>'原始密码错误']);
             }
         }
     }

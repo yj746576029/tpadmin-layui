@@ -31,11 +31,7 @@ class UserController extends BaseController
                 }
                 $list[$k]['role']=implode('|',$roleArr);
             }
-            $data['code']=0;
-            $data['msg']='';
-            $data['count']=$count;
-            $data['data']=$list;
-            $this->ajaxReturn($data);
+            $this->ajaxReturn(['code'=>0,'msg'=>'','count'=>$count,'data'=>$list]);
         }
         $this->display();
     }
@@ -67,20 +63,14 @@ class UserController extends BaseController
                 $res = D('UserRole')->addAll($dataList);
                 if ($res) {
                     M()->commit();
-                    $data['code']=0;
-                    $data['msg']='添加成功';
-                    $this->ajaxReturn($data);
+                    $this->ajaxReturn(['code'=>0,'msg'=>'添加成功']);
                 } else {
                     M()->rollback();
-                    $data['code']=1;
-                    $data['msg']='添加失败';
-                    $this->ajaxReturn($data);
+                    $this->ajaxReturn(['code'=>1,'msg'=>'添加失败']);
                 }
             } else {
                 M()->rollback();
-                $data['code']=1;
-                $data['msg']='添加失败';
-                $this->ajaxReturn($data);
+                $this->ajaxReturn(['code'=>1,'msg'=>'添加失败']);
             }
         } else {
             $roleList = M('Role')->field('id,role_name')->where(['status' => 1])->select();
@@ -115,20 +105,14 @@ class UserController extends BaseController
                 $res = D('UserRole')->addAll($dataList);
                 if ($res) {
                     M()->commit();
-                    $data['code']=0;
-                    $data['msg']='编辑成功';
-                    $this->ajaxReturn($data);
+                    $this->ajaxReturn(['code'=>0,'msg'=>'编辑成功']);
                 } else {
                     M()->rollback();
-                    $data['code']=1;
-                    $data['msg']='编辑失败';
-                    $this->ajaxReturn($data);
+                    $this->ajaxReturn(['code'=>1,'msg'=>'编辑失败']);
                 }
             } else {
                 M()->rollback();
-                $data['code']=1;
-                $data['msg']='编辑失败';
-                $this->ajaxReturn($data);
+                $this->ajaxReturn(['code'=>1,'msg'=>'编辑失败']);
             }
         } else {
             $id = I('get.id');
@@ -153,14 +137,10 @@ class UserController extends BaseController
         if ($res) {
             D('UserRole')->where(['user_id' => $id])->delete();
             M()->commit();
-            $data['code']=0;
-            $data['msg']='删除成功';
-            $this->ajaxReturn($data);
+            $this->ajaxReturn(['code'=>0,'msg'=>'删除成功']);
         } else {
             M()->rollback();
-            $data['code']=1;
-            $data['msg']='删除成功';
-            $this->ajaxReturn($data);
+            $this->ajaxReturn(['code'=>1,'msg'=>'删除失败']);
         }
     }
 
@@ -172,14 +152,10 @@ class UserController extends BaseController
         if ($res) {
             D('UserRole')->where(['user_id' => ['IN',$ids]])->delete();
             M()->commit();
-            $data['code']=0;
-            $data['msg']='删除成功';
-            $this->ajaxReturn($data);
+            $this->ajaxReturn(['code'=>0,'msg'=>'删除成功']);
         } else {
             M()->rollback();
-            $data['code']=1;
-            $data['msg']='删除失败';
-            $this->ajaxReturn($data);
+            $this->ajaxReturn(['code'=>1,'msg'=>'删除失败']);
         }
     }
 }

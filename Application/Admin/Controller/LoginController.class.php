@@ -16,27 +16,18 @@ class LoginController extends Controller
             $vercode = I('post.vercode');
             $user = M('User')->where(['user_name' => $userName])->find();
             if (!$user) {
-                $this->error('用户不存在');
-                $data['code']=1;
-                $data['msg']='用户不存在';
-                $this->ajaxReturn($data);
+                $this->ajaxReturn(['code'=>1,'msg'=>'用户不存在']);
             } else {
                 if ($user['password'] === md5(md5($password) . $user['salt'])) {
                     if ($this->checkVerify($vercode)) {
                         unset($user['password'], $user['salt']);
                         session('user', $user);
-                        $data['code']=0;
-                        $data['msg']='登录成功';
-                        $this->ajaxReturn($data);
+                        $this->ajaxReturn(['code'=>0,'msg'=>'登录成功']);
                     } else {
-                        $data['code']=1;
-                        $data['msg']='验证码错误';
-                        $this->ajaxReturn($data);
+                        $this->ajaxReturn(['code'=>1,'msg'=>'验证码错误']);
                     }
                 } else {
-                    $data['code']=1;
-                    $data['msg']='密码错误';
-                    $this->ajaxReturn($data);
+                    $this->ajaxReturn(['code'=>1,'msg'=>'密码错误']);
                 }
             }
         } else {
@@ -47,9 +38,7 @@ class LoginController extends Controller
     public function logout()
     {
         session('user', null);
-        $data['code']=0;
-        $data['msg']='退出成功';
-        $this->ajaxReturn($data);
+        $this->ajaxReturn(['code'=>0,'msg'=>'退出成功']);
     }
 
     public function verify()

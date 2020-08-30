@@ -44,14 +44,14 @@
         </ul>
         <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
 
-          <li class="layui-nav-item" lay-unselect>
-            <a lay-href="app/message/index.html" layadmin-event="message" lay-text="消息中心">
-              <i class="layui-icon layui-icon-notice"></i>
+          <!-- <li class="layui-nav-item" lay-unselect>
+            <a lay-href="" layadmin-event="message" lay-text="消息中心">
+              <i class="layui-icon layui-icon-notice"></i> -->
 
               <!-- 如果有新消息，则显示小圆点 -->
-              <span class="layui-badge-dot"></span>
+              <!-- <span class="layui-badge-dot"></span>
             </a>
-          </li>
+          </li> -->
           <li class="layui-nav-item layui-hide-xs" lay-unselect>
             <a href="javascript:;" layadmin-event="theme">
               <i class="layui-icon layui-icon-theme"></i>
@@ -69,7 +69,7 @@
           </li>
           <li class="layui-nav-item" lay-unselect>
             <a href="javascript:;">
-              <cite>贤心</cite>
+              <cite>{$Think.session.user.user_name}</cite>
             </a>
             <dl class="layui-nav-child">
               <dd><a lay-href="{:U('Admin/Profile/index')}">基本资料</a></dd>
@@ -82,9 +82,9 @@
           <li class="layui-nav-item layui-hide-xs" lay-unselect>
             <a href="javascript:;" layadmin-event="about"><i class="layui-icon layui-icon-more-vertical"></i></a>
           </li>
-          <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-unselect>
+          <!-- <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-unselect>
             <a href="javascript:;" layadmin-event="more"><i class="layui-icon layui-icon-more-vertical"></i></a>
-          </li>
+          </li> -->
         </ul>
       </div>
 
@@ -92,7 +92,7 @@
       <div class="layui-side layui-side-menu">
         <div class="layui-side-scroll">
           <div class="layui-logo" lay-href="{:U('Admin/Index/console')}">
-            <span>layuiAdmin</span>
+            <span>tpadmin-pro</span>
           </div>
 
           <!-- <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu"
