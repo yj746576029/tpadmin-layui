@@ -21,6 +21,7 @@ class UserController extends BaseController
             if (!empty(I('get.email'))) {
                 $condition['email'] = I('get.email');
             }
+            $count=M('User')->where($condition)->count();
             $list = D('User')->relation(true)->where($condition)->order('id desc')->page($page . ',' . $pageSize)->select();
             foreach($list as $k=>$v){
                 $list[$k]['create_time']=date('Y-m-d H:i:s',$v['create_time']);
@@ -32,7 +33,7 @@ class UserController extends BaseController
             }
             $data['code']=0;
             $data['msg']='';
-            $data['count']=0;
+            $data['count']=$count;
             $data['data']=$list;
             $this->ajaxReturn($data);
         }
@@ -95,8 +96,8 @@ class UserController extends BaseController
             $id = I('post.id');
             $data['user_name'] = I('post.user_name');
             if (!empty(I('post.password'))) {
-                $data['salt'] = substr(md5(uniqid(true)), 0, 4);
-                $data['password'] = md5(md5(I('post.password')) . $data['salt']);
+                $user=M('User')->field('salt')->where(['id' => $id])->find();
+                $data['password'] = md5(md5(I('post.password')) . $user['salt']);
             }
             $data['mobile'] = I('post.mobile');
             $data['email'] = I('post.email');
@@ -114,14 +115,20 @@ class UserController extends BaseController
                 $res = D('UserRole')->addAll($dataList);
                 if ($res) {
                     M()->commit();
-                    $this->success('编辑成功', U('admin/user/index'));
+                    $data['code']=0;
+                    $data['msg']='编辑成功';
+                    $this->ajaxReturn($data);
                 } else {
                     M()->rollback();
-                    $this->error('编辑失败');
+                    $data['code']=1;
+                    $data['msg']='编辑失败';
+                    $this->ajaxReturn($data);
                 }
             } else {
                 M()->rollback();
-                $this->error('编辑失败');
+                $data['code']=1;
+                $data['msg']='编辑失败';
+                $this->ajaxReturn($data);
             }
         } else {
             $id = I('get.id');
@@ -130,7 +137,7 @@ class UserController extends BaseController
             foreach ($user['role'] as $v) {
                 array_push($role_ids, $v['id']);
             }
-            $user['role'] = $role_ids;
+            $user['role_ids'] = $role_ids;
             $roleList = M('Role')->field('id,role_name')->where(['status' => 1])->select();
             $this->assign('list', $roleList);
             $this->assign('item', $user);
@@ -140,16 +147,39 @@ class UserController extends BaseController
 
     public function del()
     {
-        $id = I('get.id');
+        $id = I('post.id');
         M()->startTrans();
         $res = M('User')->where(['id' => $id])->delete();
         if ($res) {
             D('UserRole')->where(['user_id' => $id])->delete();
             M()->commit();
-            $this->success('删除成功', U('admin/user/index'));
+            $data['code']=0;
+            $data['msg']='删除成功';
+            $this->ajaxReturn($data);
         } else {
             M()->rollback();
-            $this->error('删除失败');
+            $data['code']=1;
+            $data['msg']='删除成功';
+            $this->ajaxReturn($data);
+        }
+    }
+
+    public function batchdel()
+    {
+        $ids = I('post.ids');
+        M()->startTrans();
+        $res = M('User')->where(['id' => ['IN',$ids]])->delete();
+        if ($res) {
+            D('UserRole')->where(['user_id' => ['IN',$ids]])->delete();
+            M()->commit();
+            $data['code']=0;
+            $data['msg']='删除成功';
+            $this->ajaxReturn($data);
+        } else {
+            M()->rollback();
+            $data['code']=1;
+            $data['msg']='删除成功';
+            $this->ajaxReturn($data);
         }
     }
 }
