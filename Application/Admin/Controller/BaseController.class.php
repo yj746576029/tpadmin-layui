@@ -16,7 +16,7 @@ class BaseController extends Controller
     public function _initialize()
     {
         
-        // $this->checkLogin();
+        $this->checkLogin();
         $this->assign('sidebar', create_menu());
         // $this->checkAuth();
     }
@@ -26,14 +26,14 @@ class BaseController extends Controller
      *
      * @return void
      */
-    // private function checkLogin()
-    // {
-    //     if (!session('?user')) {
-    //         $this->redirect('admin/login/index');
-    //         die;
-    //     }
-    //     $this->assign('menu', create_menu());
-    // }
+    private function checkLogin()
+    {
+        if (!session('?user')) {
+            $this->redirect('admin/login/index');
+            die;
+        }
+        $this->assign('menu', create_menu());
+    }
 
     /**
      * 校验操作权限

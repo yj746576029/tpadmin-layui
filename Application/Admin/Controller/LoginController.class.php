@@ -13,21 +13,30 @@ class LoginController extends Controller
         if (IS_POST) {
             $userName = I('post.user_name');
             $password = I('post.password');
-            $verify = I('post.verify');
+            $vercode = I('post.vercode');
             $user = M('User')->where(['user_name' => $userName])->find();
             if (!$user) {
                 $this->error('用户不存在');
+                $data['code']=1;
+                $data['msg']='用户不存在';
+                $this->ajaxReturn($data);
             } else {
                 if ($user['password'] === md5(md5($password) . $user['salt'])) {
-                    if ($this->checkVerify($verify)) {
+                    if ($this->checkVerify($vercode)) {
                         unset($user['password'], $user['salt']);
                         session('user', $user);
-                        $this->success('登录成功', U('admin/index/index'));
+                        $data['code']=0;
+                        $data['msg']='登录成功';
+                        $this->ajaxReturn($data);
                     } else {
-                        $this->error('验证码错误');
+                        $data['code']=1;
+                        $data['msg']='验证码错误';
+                        $this->ajaxReturn($data);
                     }
                 } else {
-                    $this->error('密码错误');
+                    $data['code']=1;
+                    $data['msg']='密码错误';
+                    $this->ajaxReturn($data);
                 }
             }
         } else {
