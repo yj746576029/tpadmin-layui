@@ -15,10 +15,10 @@ class BaseController extends Controller
 
     public function _initialize()
     {
-        
+
         $this->checkLogin();
         $this->assign('sidebar', create_menu());
-        // $this->checkAuth();
+        $this->checkAuth();
     }
 
     /**
@@ -43,28 +43,31 @@ class BaseController extends Controller
     public function checkAuth()
     {
         // $module = MODULE_NAME;
-        $controller = strtolower(CONTROLLER_NAME);
-        $action = strtolower(ACTION_NAME);
+        $controller = CONTROLLER_NAME;
+        $action = ACTION_NAME;
         $authArr = auth_list();
-        
-        $permArr = [
-            'c' => false, //控制器是否有权限
-            'a' => false, //方法是否有权限
-        ];
+
+        $authArrNew = [];
         foreach ($authArr as $v) {
-            if ($v['rule'] === $controller) {
-                $permArr['c'] = true;
-            }
-            if ($v['rule'] === $controller . '/' . $action) {
-                $permArr['a'] = true;
-            }
+            $v['level'] == 3 ? array_push($authArrNew, $v['rule']) : '';
         }
-        if (!($permArr['c'] || $permArr['a'])) {
-            $noCheckArr=['index/index'];//忽略校验的控制器/方法
-            if(!in_array($controller . '/' . $action,$noCheckArr)){
-                $this->ajaxReturn(['code'=>1,'msg'=>'您没有权限']);
-                die;
+
+        //忽略校验的“控制器/方法”
+        $noCheckArr = [
+            'Index/index',
+            'Index/console'
+        ];
+        // print_r($authArrNew);die;
+
+        $authAll = array_merge($authArrNew, $noCheckArr); //所有允许访问的“控制器/方法”
+
+        if (!in_array($controller . '/' . $action, $authAll)) {
+            if(IS_POST){
+                $this->ajaxReturn(['code'=>1,'msg'=>'没有权限']);
+            }else{
+                $this->display('/noPermission');
             }
+            die;
         }
     }
 }

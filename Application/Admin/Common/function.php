@@ -138,3 +138,11 @@ if (!function_exists('create_menu')) {
         return $menuHtml;
     }
 }
+
+if (!function_exists('first_frame_url')) {
+    function first_frame_url()
+    {
+        $tree = list_to_tree(auth_list());
+        return U($tree[0]['children'][0]['url']);
+    }
+}
